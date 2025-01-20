@@ -1,0 +1,46 @@
+image: maven:3.9.8-eclipse-temurin-21
+
+stages:
+  - test
+  - package
+  - build
+  - deploy
+
+test:
+  stage: test
+  image: maven:3.9.8-eclipse-temurin-21
+  script:
+    mvn test
+
+package:
+  stage: package
+  image: maven:3.9.8-eclipse-temurin-21
+  script:
+    - mvn package -Dmaven.test.skip
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - target/iban-example-app-0.0.1-SNAPSHOT.jar
+
+build:
+  stage: build
+  tags:
+    - build
+    - deploy
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker build --build-arg JAR_FILE=target/iban-example-app-0.0.1-SNAPSHOT.jar -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+
+deploy:
+  stage: deploy
+  tags:
+    - build
+    - deploy
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker stop iban-app-backend || true
+    - docker rm iban-app-backend || true
+    - docker image prune -a -f
+    - docker run --network host --restart always -v /opt/config:/opt/config -d --name iban-app-backend -p 8080:8080 -p 8081:8081 $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+    - echo "Finished deployment"
