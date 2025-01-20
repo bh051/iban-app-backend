@@ -1,0 +1,12 @@
+services:
+  redis-cache:
+    container_name: iban-redis-cache
+    image: redis:7.4.2
+    ports:
+      - '6379:6379'
+    restart: always
+    volumes:
+      - cache:/data
+volumes:
+  cache:
+    driver: local
