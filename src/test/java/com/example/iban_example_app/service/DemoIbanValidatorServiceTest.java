@@ -8,14 +8,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-public class LocalIbanValidatorServiceTest {
+public class DemoIbanValidatorServiceTest {
 
   @Autowired
-  private LocalIbanValidatorService localIbanValidatorService;
+  private DemoIbanValidatorService demoIbanValidatorService;
 
   @Test
   public void shouldReturnValidIbanAndBankCode() {
-    var result = localIbanValidatorService.validateIban("DE02120300000000202051");
+    var result = demoIbanValidatorService.validateIban("DE02120300000000202051");
 
     assertTrue(result.valid());
     assertEquals("DE02120300000000202051", result.iban());

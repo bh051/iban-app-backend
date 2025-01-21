@@ -11,12 +11,16 @@ import org.springframework.web.client.RestClient;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Calls the external REST API https://openiban.com/validate to validate an IBAN and query bank data.
+ */
 @Primary
 @Service
 public class OpenIbanValidatorService implements IbanValidatorService {
 
   private final RestClient restClient = RestClient.builder().build();
 
+  // Results will be cached in a redis database
   @Cacheable(cacheNames = {"ibanCache"})
   @Override
   public IbanValidationResult validateIban(String iban) {

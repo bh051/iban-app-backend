@@ -5,9 +5,13 @@ import com.example.iban_example_app.domain.IbanValidationResult;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+/**
+ * Example implementation of an IBAN Validator service.
+ */
 @Service
-public class LocalIbanValidatorService implements IbanValidatorService {
+public class DemoIbanValidatorService implements IbanValidatorService {
 
+  // Results will be cached in a redis database
   @Cacheable(cacheNames = {"ibanCache"})
   @Override
   public IbanValidationResult validateIban(String iban) {
